@@ -1,0 +1,52 @@
+#--- source
+https://github.com/codergogoi
+
+https://github.com/codergogoi/go-ecommerce-series
+#--- docs
+Ecommerce golang full stack
+
+#--- Powershell
+mkdir configs domain infra pkg
+- cd internal
+mkdir api domain dto helper repository service
+
+- cd api
+mkdir graphql grpc rest
+
+
+#--- install
+cd  proj_1
+go mod init proj_1
+
+go get github.com/gofiber/fiber/v2
+go get github.com/joho/godotenv
+
+- nodemon cho makefile va APP_ENV=dev
+sudo npm install nodemon -g
+
+#--- set environemt tren Powershell
+set APP_ENV=dev
+
+#--- run
+cd  proj_1
+go run .
+
+- chay khi co nodemon
+APP_ENV=dev go run .
+
+#--- test
+
+#--- cicd
+
+#--- deploy
+
+#--- git
+git init
+git add .
+git commit -m "feat: create new server + health"
+
+- branch
+git checkout -b p2_user
+git add .
+git commit -m "feat: create users api"
+git push -u origin p2_user
