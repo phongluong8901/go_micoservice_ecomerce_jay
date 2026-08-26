@@ -7,5 +7,11 @@ git push -u origin p2_user
 - branch
 git checkout -b p3_bussiness
 git add .
-git commit -m "feat: why use go for bussiness logic"
+git commit -m "feat: first branch"
 git push -u origin p3_bussiness
+
+- branch
+git checkout -b p4_ORM
+git add .
+git commit -m "feat: first branch"
+git push -u origin p4_ORM
