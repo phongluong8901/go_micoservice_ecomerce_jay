@@ -1,33 +1,55 @@
 package service
 
 import (
+	"errors"
+	"fmt"
 	"log"
 	"proj_1/internal/domain"
 	"proj_1/internal/dto"
+	"proj_1/internal/repository"
 )
 
 type UserService struct {
+	Repo repository.UserRepository
 }
 
 // Signup(email string, pasword string, phone string)
 func (s UserService) Signup(input dto.UserSignup) (string, error) {
-	log.Println(input)
+	log.Println(input) //log create table User
+
+	user, err := s.Repo.CreateUser(domain.User{
+		Email:    input.Email,
+		Password: input.Password,
+		Phone:    input.Phone,
+	})
+
+	//generate token
+	log.Println(user)
+
+	userInfo := fmt.Sprintf("%v, %v, %v", user.ID, user.Email, user.UserType)
 
 	//call db to create user
-	return "this-is-my-token-id", nil
+	return userInfo, err
 }
 
 func (s UserService) findUserByEmail(email string) (*domain.User, error) {
 	//perform some db operation
 
 	//business logic
+	user, err := s.Repo.FindUser(email)
 
-	return nil, nil
+	return &user, err
 }
 
-func (s UserService) Login(input any) (string, error) {
+func (s UserService) Login(email string, password string) (string, error) {
+	user, err := s.findUserByEmail(email)
+	if err != nil {
+		return "", errors.New("user does not exist with the provided email id")
+	}
 
-	return "", nil
+	//compare password and generate token
+
+	return user.Email, nil
 }
 
 func (s UserService) GetVerificationCode(e domain.User) (int, error) {
