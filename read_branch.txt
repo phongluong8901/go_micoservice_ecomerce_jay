@@ -21,3 +21,9 @@ git checkout -b p5_JWT
 git add .
 git commit -m "feat: first branch"
 git push -u origin p5_JWT
+
+- branch
+git checkout -b p6_SMS
+git add .
+git commit -m "feat: first branch"
+git push -u origin p6_SMS
