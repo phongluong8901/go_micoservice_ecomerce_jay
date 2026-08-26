@@ -36,3 +36,10 @@ service endpoints
 client - users, seller
 
 # --- prepare our project
+
+# --- clearn architecture & solid princcipal
+
+Framework and device: Devices, DB, Web, UI, external  interfaces
+interface adapters: controllers, gateways, presenters
+application bussiness: use cases
+enterprise bussiness: entities

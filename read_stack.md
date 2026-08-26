@@ -31,3 +31,30 @@ Bản chất: Nó là một mảng động (slice) mà mỗi phần tử bên tr
 Dùng để làm gì: Khi bạn muốn trả về hoặc lưu trữ một danh sách các phần tử có kiểu dữ liệu khác nhau hoặc chưa xác định (ví dụ: một mảng vừa chứa số, vừa chứa chữ, vừa chứa object).
 
 # --- more
+
+1. Go ORM
+GO ORM (Object-Relational Mapping) là một kỹ thuật và tập hợp các thư viện giúp lập trình viên ánh xạ các bảng trong cơ sở dữ liệu quan hệ (như MySQL, PostgreSQL, SQLite) thành các cấu trúc dữ liệu (struct) trong ngôn ngữ lập trình Go (Golang).
+
+Thay vì phải viết các câu lệnh SQL thủ công (Raw SQL) dài dòng, ORM cho phép bạn thao tác với cơ sở dữ liệu hoàn toàn thông qua các đoạn code Go tự nhiên (như thêm, sửa, xóa, truy vấn dữ liệu thông qua các phương thức đối tượng).
+
+Các tính năng chính của GO ORM
+Ánh xạ mô hình (Model Mapping): Tự động chuyển đổi các Go Struct thành các bảng cơ sở dữ liệu và ngược lại.
+Truy vấn an toàn và linh hoạt: Cung cấp các phương thức dạng chuỗi (chaining methods) để viết câu lệnh điều kiện, sắp xếp, phân trang mà không lo bị lỗi cú pháp SQL.
+Quản lý mối quan hệ (Associations): Dễ dàng xử lý các mối quan hệ giữa các bảng như One-to-One, One-to-Many, và Many-to-Many.
+Tự động migrate (Auto Migration): Tự động tạo bảng hoặc cập nhật cấu trúc bảng (thêm/sửa cột) trực tiếp từ code Go.
+Hỗ trợ Transaction: Quản lý các giao dịch cơ sở dữ liệu an toàn để đảm bảo tính toàn vẹn dữ liệu.
+
+Các thư viện ORM phổ biến nhất trong Go
+Gorm (gorm.io):
+Ưu điểm: Cú pháp cực kỳ thân thiện, hỗ trợ đầy đủ tính năng, cộng đồng lớn, có sẵn nhiều plugin hỗ trợ (cache, soft delete, v.v.).
+
+
+
+
+
+
+
+
+
+
+
