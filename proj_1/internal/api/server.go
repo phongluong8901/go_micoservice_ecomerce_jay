@@ -7,6 +7,7 @@ import (
 	"proj_1/internal/api/rest"
 	"proj_1/internal/api/rest/handlers"
 	"proj_1/internal/domain"
+	"proj_1/internal/helper"
 
 	"gorm.io/driver/postgres"
 
@@ -34,9 +35,13 @@ func StartServer(config configs.AppConfig) {
 	//run migration
 	db.AutoMigrate(&domain.User{})
 
+	//auth helper
+	auth := helper.SetupAuth(config.AppSecret)
+
 	rh := &rest.RestHandler{ //Khởi tạo struct mới và trả về địa chỉ ô nhớ của nó (con trỏ).
-		App: app, //đưa instance của Fiber vào trường App trong struct
-		DB:  db,  //instance cua db postgres
+		App:  app,  //đưa instance của Fiber vào trường App trong struct
+		DB:   db,   //instance cua db postgres
+		Auth: auth, //instance authe helper
 	}
 
 	setupRoutes(rh)

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"proj_1/internal/api/rest"
 	"proj_1/internal/dto"
@@ -21,27 +22,30 @@ func SetupUserRoutes(rh *rest.RestHandler) {
 	//create an instance of user service & inject to handler
 	svc := service.UserService{
 		Repo: repository.NewUserRepository(rh.DB),
+		Auth: rh.Auth,
 	}
 	handler := UserHandler{
 		svc: svc,
 	}
 
+	//- create prefix for public gorup
+	pubRoutes := app.Group("/users")
 	//public endpoints
-	app.Post("/register", handler.Register)
-	app.Post("/login", handler.Login)
+	pubRoutes.Post("/register", handler.Register)
+	pubRoutes.Post("/login", handler.Login)
 
-	//provate endpoints
-	app.Get("/verify", handler.GetVerificationCode)
-	app.Post("/verify", handler.Verify)
-	app.Get("/profile", handler.CreateProfile)
-	app.Post("/profile", handler.GetProfile)
-
-	app.Get("/cart", handler.GetCart)
-	app.Post("/cart", handler.AddToCart)
-	app.Get("/orders", handler.GetOrders)
-	app.Get("/order/:id", handler.GetOrder)
-
-	app.Post("/become-seller", handler.BecomeSeller)
+	//- create prefix for private gorup
+	pvtRoutes := pubRoutes.Group("/", rh.Auth.Authorize)
+	//private endpoints
+	pvtRoutes.Get("/verify", handler.GetVerificationCode)
+	pvtRoutes.Post("/verify", handler.Verify)
+	pvtRoutes.Get("/profile", handler.GetProfile)
+	pvtRoutes.Post("/profile", handler.CreateProfile)
+	pvtRoutes.Get("/cart", handler.GetCart)
+	pvtRoutes.Post("/cart", handler.AddToCart)
+	pvtRoutes.Get("/orders", handler.GetOrders)
+	pvtRoutes.Get("/order/:id", handler.GetOrder)
+	pvtRoutes.Post("/become-seller", handler.BecomeSeller)
 }
 
 func (h *UserHandler) Register(ctx *fiber.Ctx) error {
@@ -111,8 +115,12 @@ func (h *UserHandler) CreateProfile(ctx *fiber.Ctx) error {
 }
 
 func (h *UserHandler) GetProfile(ctx *fiber.Ctx) error {
+	user := h.svc.Auth.GetCurrentUser(ctx)
+	log.Println(user)
+
 	return ctx.Status(http.StatusOK).JSON(&fiber.Map{
-		"message": "getprofile",
+		"message": "get profile",
+		"user":    user,
 	})
 }
 

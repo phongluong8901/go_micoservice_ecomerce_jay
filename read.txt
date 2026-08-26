@@ -28,6 +28,9 @@ go get -u gorm.io/gorm
 go get -u gorm.io/driver/postgres
 go get gorm.io/driver/postgres
 
+go get golang.org/x/crypto/bcrypt
+go get github.com/golang-jwt/jwt/v4
+
 #--- set environemt tren Powershell
 set APP_ENV=dev
 
