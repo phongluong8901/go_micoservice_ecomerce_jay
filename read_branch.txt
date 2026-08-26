@@ -1,0 +1,11 @@
+- branch
+git checkout -b p2_user
+git add .
+git commit -m "feat: create users api"
+git push -u origin p2_user
+
+- branch
+git checkout -b p3_bussiness
+git add .
+git commit -m "feat: why use go for bussiness logic"
+git push -u origin p3_bussiness
