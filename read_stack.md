@@ -2,6 +2,8 @@
 gofiber/fiber/v2: Web framework siêu tốc (cú pháp giống Express.js) dùng để xây dựng API và xử lý HTTP request/response.
 joho/godotenv: Thư viện đọc file .env để nạp các biến môi trường vào ứng dụng Go giúp bảo mật cấu hình.
 log: Thư viện chuẩn (built-in) của Go dùng để in thông báo, lỗi hoặc trạng thái ra màn hình console (terminal).
+"crypto/rand": Thư viện cung cấp bộ tạo số ngẫu nhiên an toàn về mặt mật mã (dùng để sinh dữ liệu ngẫu nhiên chống đoán trước).
+"strconv": Thư viện hỗ trợ chuyển đổi kiểu dữ liệu (ở đây dùng để chuyển chuỗi số thành số nguyên int).
 
 # --- stack
 1. Fatalf
