@@ -39,9 +39,10 @@ func StartServer(config configs.AppConfig) {
 	auth := helper.SetupAuth(config.AppSecret)
 
 	rh := &rest.RestHandler{ //Khởi tạo struct mới và trả về địa chỉ ô nhớ của nó (con trỏ).
-		App:  app,  //đưa instance của Fiber vào trường App trong struct
-		DB:   db,   //instance cua db postgres
-		Auth: auth, //instance authe helper
+		App:    app,  //đưa instance của Fiber vào trường App trong struct
+		DB:     db,   //instance cua db postgres
+		Auth:   auth, //instance authe helper
+		Config: config,
 	}
 
 	setupRoutes(rh)

@@ -2,17 +2,21 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"log"
+	"proj_1/configs"
 	"proj_1/internal/domain"
 	"proj_1/internal/dto"
 	"proj_1/internal/helper"
 	"proj_1/internal/repository"
+	"proj_1/pkg/notification"
 	"time"
 )
 
 type UserService struct {
-	Repo repository.UserRepository
-	Auth helper.Auth
+	Repo   repository.UserRepository
+	Auth   helper.Auth
+	Config configs.AppConfig
 }
 
 // Signup(email string, pasword string, phone string)
@@ -71,16 +75,17 @@ func (s UserService) isVerifiedUser(id uint) bool {
 	return err == nil && currentUser.Verified
 }
 
-func (s UserService) GetVerificationCode(e domain.User) (int, error) {
-	//if user already verified
+func (s UserService) GetVerificationCode(e domain.User) error {
+
+	// if user already verified
 	if s.isVerifiedUser(e.ID) {
-		return 0, nil
+		return errors.New("user already verified")
 	}
 
-	//generate vetification code
+	// generate verification code
 	code, err := s.Auth.GenerateCode()
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	// update user
@@ -90,14 +95,25 @@ func (s UserService) GetVerificationCode(e domain.User) (int, error) {
 	}
 
 	_, err = s.Repo.UpdateUser(e.ID, user)
+
 	if err != nil {
-		return 0, errors.New("unable to update vertification code")
+		return errors.New("unable to update verification code")
 	}
 
-	//send SMS
+	user, _ = s.Repo.FindUserById(e.ID)
 
-	// return vertification code
-	return code, nil
+	// send SMS
+	notificationClient := notification.NewNotificationClient(s.Config)
+
+	msg := fmt.Sprintf("Your verification code is %v", code)
+
+	err = notificationClient.SendSMS(user.Phone, msg)
+	if err != nil {
+		return errors.New("error on sending sms")
+	}
+
+	// return verification code
+	return nil
 }
 
 func (s UserService) VerifyCode(id uint, code int) error {

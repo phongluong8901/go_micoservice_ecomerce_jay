@@ -50,6 +50,13 @@ Các thư viện ORM phổ biến nhất trong Go
 Gorm (gorm.io):
 Ưu điểm: Cú pháp cực kỳ thân thiện, hỗ trợ đầy đủ tính năng, cộng đồng lớn, có sẵn nhiều plugin hỗ trợ (cache, soft delete, v.v.).
 
+2. Twilio/SNS/SES cho SMS
+https://www.twilio.com/en-us
+Twilio: Chuyên dùng để gửi SMS (và gọi điện, WhatsApp). Đây là dịch vụ bên thứ ba phổ biến nhất thế giới cho việc gửi tin nhắn OTP, thông báo.
+
+AWS SNS (Simple Notification Service): Dịch vụ của Amazon dùng để gửi SMS (và thông báo đẩy push notification, gửi qua email, v.v.). Thường được các hệ thống chạy trên AWS sử dụng để gửi mã OTP tiết kiệm.
+
+AWS SES (Simple Email Service): Dịch vụ của Amazon chuyên dùng để gửi Email (như email kích hoạt tài khoản, newsletter, v.v.), không dùng cho SMS.
 
 
 

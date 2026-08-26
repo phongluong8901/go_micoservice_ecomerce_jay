@@ -43,3 +43,9 @@ Framework and device: Devices, DB, Web, UI, external  interfaces
 interface adapters: controllers, gateways, presenters
 application bussiness: use cases
 enterprise bussiness: entities
+
+# --- go serveice & business - Notification
+send notification
+get status
+
+twilio, SNS, SES
