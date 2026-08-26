@@ -142,3 +142,28 @@ func (a Auth) GetCurrentUser(ctx *fiber.Ctx) domain.User {
 func (a Auth) GenerateCode() (int, error) {
 	return RandomNumbers(6)
 }
+
+func (a Auth) AuthorizeSeller(ctx *fiber.Ctx) error {
+	//dùng để lấy giá trị của header Authorization từ HTTP request gửi lên bởi client. Dòng này thường được đặt trong các middleware xác thực (Authentication) để kiểm tra xem client có đính kèm token khi gọi API hay không.
+	authHeader := ctx.Get("Authorization")
+
+	user, err := a.VerifyToken(authHeader)
+	if err != nil {
+		return ctx.Status(401).JSON(&fiber.Map{
+			"message": "authorization failed",
+			"reason":  err,
+		})
+	} else if user.ID > 0 && user.UserType == domain.SELLER {
+		//dùng để lưu trữ dữ liệu vào không gian bộ nhớ tạm thời của request hiện tại trong framework Fiber (Go).
+		ctx.Locals("user", user)
+
+		return ctx.Next()
+
+	} else {
+		return ctx.Status(401).JSON(&fiber.Map{
+			"message": "authorization failed",
+			"reason":  errors.New("please join seller program to manage products"),
+		})
+	}
+
+}
