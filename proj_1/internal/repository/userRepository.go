@@ -16,6 +16,7 @@ type UserRepository interface {
 	UpdateUser(id uint, u domain.User) (domain.User, error)
 
 	//more
+	CreateBankAccount(e domain.BankAccount) error
 }
 
 type userRepository struct {
@@ -27,6 +28,11 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	return &userRepository{
 		db: db,
 	}
+}
+
+func (r userRepository) CreateBankAccount(e domain.BankAccount) error {
+
+	return r.db.Create(&e).Error
 }
 
 func (r userRepository) CreateUser(usr domain.User) (domain.User, error) {

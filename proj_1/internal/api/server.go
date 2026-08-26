@@ -33,7 +33,12 @@ func StartServer(config configs.AppConfig) {
 	log.Print(db)
 
 	//run migration
-	db.AutoMigrate(&domain.User{})
+	err = db.AutoMigrate(&domain.User{}, &domain.BankAccount{})
+	if err != nil {
+		log.Fatalf("error on runing migration %v", err.Error())
+	}
+
+	log.Println("migration was successful")
 
 	//auth helper
 	auth := helper.SetupAuth(config.AppSecret)
