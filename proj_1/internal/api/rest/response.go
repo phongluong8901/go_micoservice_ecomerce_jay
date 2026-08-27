@@ -10,7 +10,7 @@ func ErrorMessage(ctx *fiber.Ctx, status int, err error) error {
 	return ctx.Status(status).JSON(err.Error())
 }
 
-func InteralError(ctx *fiber.Ctx, err error) error {
+func InternalError(ctx *fiber.Ctx, err error) error {
 	return ctx.Status(http.StatusInternalServerError).JSON(err.Error())
 }
 
