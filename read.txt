@@ -82,3 +82,6 @@ yarn dev
 
 --- link
 http://localhost:3030/
+
+--- xoa git cu
+git rm --cached buy-sale
