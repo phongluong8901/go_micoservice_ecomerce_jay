@@ -1,10 +1,11 @@
 package handlers
 
 import (
-	"log"
 	"proj_1/internal/api/rest"
+	"proj_1/internal/dto"
 	"proj_1/internal/repository"
 	"proj_1/service"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -29,10 +30,10 @@ func SetupCatalogRoutes(rh *rest.RestHandler) {
 
 	//public
 	//listing products and categories
-	app.Get("/products")
-	app.Get("/products/:id")
-	app.Get("/categories")
-	app.Get("/categories/:id")
+	app.Get("/products", handler.GetProducts)
+	app.Get("/products/:id", handler.GetProduct)
+	app.Get("/categories", handler.GetCategories)
+	app.Get("/categories/:id", handler.GetCategoryById)
 
 	//private
 	//manage products and categories
@@ -51,22 +52,69 @@ func SetupCatalogRoutes(rh *rest.RestHandler) {
 	selRoutes.Delete("/products/:id", handler.DeleteProducts)
 }
 
+func (h CatalogHandler) GetCategories(ctx *fiber.Ctx) error {
+	cats, err := h.svc.Getcategories()
+	if err != nil {
+		return rest.ErrorMessage(ctx, 404, err)
+	}
+
+	return rest.SuccessResponse(ctx, "categories", cats)
+}
+
+func (h CatalogHandler) GetCategoryById(ctx *fiber.Ctx) error {
+	id, _ := strconv.Atoi(ctx.Params("id"))
+
+	cat, err := h.svc.Getcategory(id)
+	if err != nil {
+		return rest.ErrorMessage(ctx, 404, err)
+	}
+
+	return rest.SuccessResponse(ctx, "category", cat)
+}
+
 func (h CatalogHandler) CreateCategories(ctx *fiber.Ctx) error {
-	user := h.svc.Auth.GetCurrentUser(ctx)
+	req := dto.CreateCategoryRequest{}
 
-	log.Printf("current user %v", user.ID)
+	err := ctx.BodyParser(&req)
+	if err != nil {
+		return rest.BadRequestError(ctx, "create category request is not valid")
+	}
 
-	return rest.SuccessResponse(ctx, "category endpoint", nil)
+	err = h.svc.CreateCategory(req)
+	if err != nil {
+		return rest.InteralError(ctx, err)
+	}
+
+	return rest.SuccessResponse(ctx, "category created successfully", nil)
 }
 
 func (h CatalogHandler) EditCategory(ctx *fiber.Ctx) error {
+	id, _ := strconv.Atoi(ctx.Params("id"))
 
-	return rest.SuccessResponse(ctx, "category endpoint", nil)
+	req := dto.CreateCategoryRequest{}
+
+	err := ctx.BodyParser(&req)
+	if err != nil {
+		return rest.BadRequestError(ctx, "update category request is not valid")
+	}
+
+	updatedCat, err := h.svc.EditCategory(id, req)
+	if err != nil {
+		return rest.InteralError(ctx, err)
+	}
+
+	return rest.SuccessResponse(ctx, "edit category", updatedCat)
 }
 
 func (h CatalogHandler) DeleteCategory(ctx *fiber.Ctx) error {
+	id, _ := strconv.Atoi(ctx.Params("id"))
 
-	return rest.SuccessResponse(ctx, "category endpoint", nil)
+	err := h.svc.DeleteCategory(id)
+	if err != nil {
+		return rest.InteralError(ctx, err)
+	}
+
+	return rest.SuccessResponse(ctx, "category deleted successfully", nil)
 }
 
 func (h CatalogHandler) CreateProducts(ctx *fiber.Ctx) error {

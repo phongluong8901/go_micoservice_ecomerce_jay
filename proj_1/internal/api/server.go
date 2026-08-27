@@ -32,8 +32,13 @@ func StartServer(config configs.AppConfig) {
 	log.Println("database connected")
 	log.Print(db)
 
-	//run migration
-	err = db.AutoMigrate(&domain.User{}, &domain.BankAccount{})
+	//run migration - create tables
+	err = db.AutoMigrate(
+		&domain.User{},
+		&domain.BankAccount{},
+		&domain.Category{},
+		&domain.Product{},
+	)
 	if err != nil {
 		log.Fatalf("error on runing migration %v", err.Error())
 	}
@@ -68,4 +73,5 @@ func setupRoutes(rh *rest.RestHandler) { //Khai báo tham số nhận vào là m
 	//transactions
 
 	//catalog
+	handlers.SetupCatalogRoutes(rh)
 }
