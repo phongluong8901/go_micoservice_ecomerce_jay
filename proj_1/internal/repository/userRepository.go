@@ -15,8 +15,20 @@ type UserRepository interface {
 	FindUserById(id uint) (domain.User, error)
 	UpdateUser(id uint, u domain.User) (domain.User, error)
 
-	//more
+	//buyer -> to seller user
 	CreateBankAccount(e domain.BankAccount) error
+
+	//cart
+	FindCartItems(uId uint) ([]domain.Cart, error)
+	FindCartItem(uId uint, pId uint) (domain.Cart, error)
+	CreateCart(c domain.Cart) error
+	UpdateCart(c domain.Cart) error
+	DeleteCartById(id uint) error
+	DeleteCartItems(uId uint) error
+
+	//profile
+	CreateProfile(e domain.Address) error
+	UpdateProfile(e domain.Address) error
 }
 
 type userRepository struct {
@@ -49,7 +61,8 @@ func (r userRepository) FindUser(email string) (domain.User, error) {
 	var user domain.User
 
 	//tìm kiếm bản ghi đầu tiên khớp với điều kiện email và gán kết quả vào biến user
-	err := r.db.First(&user, "email=?", email).Error
+	//Preload, GORM chỉ lấy thông tin của bản thân bảng users, trường Address trong struct user sẽ bị rỗng (nil hoặc giá trị mặc định).
+	err := r.db.Preload("Address").First(&user, "email=?", email).Error
 	if err != nil {
 		log.Printf("find user error %v", err)
 		return domain.User{}, errors.New("user doese not exist")
@@ -62,7 +75,8 @@ func (r userRepository) FindUserById(id uint) (domain.User, error) {
 	var user domain.User
 
 	//tìm kiếm bản ghi dựa vào Khóa chính (Primary Key), cụ thể ở đây là tìm người dùng (User) theo id.
-	err := r.db.First(&user, id).Error
+	// khi chay no se lay thong tin address truoc va gui kem ve theo user table
+	err := r.db.Preload("Address").First(&user, id).Error
 	if err != nil {
 		log.Printf("find user error %v", err)
 		return domain.User{}, errors.New("user doese not exist")
@@ -82,4 +96,56 @@ func (r userRepository) UpdateUser(id uint, u domain.User) (domain.User, error) 
 	}
 
 	return user, nil
+}
+
+func (r userRepository) FindCartItems(uId uint) ([]domain.Cart, error) {
+	var carts []domain.Cart
+	err := r.db.Where("user_id=?", uId).Find(&carts).Error
+	return carts, err
+}
+
+func (r userRepository) FindCartItem(uId uint, pId uint) (domain.Cart, error) {
+	cartItem := domain.Cart{}
+	err := r.db.Where("user_id=? AND product_id=?", uId, pId).First(&cartItem).Error
+	return cartItem, err
+}
+
+func (r userRepository) CreateCart(c domain.Cart) error {
+	return r.db.Create(&c).Error
+}
+
+func (r userRepository) UpdateCart(c domain.Cart) error {
+	var cart domain.Cart
+	err := r.db.Model(&cart).Clauses(clause.Returning{}).Where("id=?", c.ID).Updates(c).Error
+	return err
+}
+
+func (r userRepository) DeleteCartById(id uint) error {
+	err := r.db.Delete(&domain.Cart{}, id).Error
+	return err
+}
+
+func (r userRepository) DeleteCartItems(uId uint) error {
+	err := r.db.Where("user_id=?", uId).Delete(&domain.Cart{}).Error
+	return err
+}
+
+func (r userRepository) CreateProfile(e domain.Address) error {
+	err := r.db.Create(&e).Error
+	if err != nil {
+		log.Printf("error on creating profile with address %v", err)
+		return errors.New("failed to create profile")
+	}
+	return nil
+}
+
+func (r userRepository) UpdateProfile(e domain.Address) error {
+
+	err := r.db.Where("user_id=?", e.UserId).Updates(e).Error
+	if err != nil {
+		log.Printf("error on update profile with address %v", err)
+		return errors.New("failed to create profile")
+	}
+	return nil
+
 }

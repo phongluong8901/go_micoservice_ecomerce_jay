@@ -15,6 +15,7 @@ import (
 
 type UserService struct {
 	Repo   repository.UserRepository
+	CRepo  repository.CatalogRepository
 	Auth   helper.Auth
 	Config configs.AppConfig
 }
@@ -149,18 +150,81 @@ func (s UserService) VerifyCode(id uint, code int) error {
 	return nil
 }
 
-func (s UserService) CreateProfile(id uint, input any) error {
+func (s UserService) CreateProfile(id uint, input dto.ProfileInput) error {
+	// update user
+	user, err := s.Repo.FindUserById(id)
+
+	if err != nil {
+		return err
+	}
+	if input.FirstName != "" {
+		user.FirstName = input.FirstName
+	}
+	if input.LastName != "" {
+		user.LastName = input.LastName
+	}
+
+	_, err = s.Repo.UpdateUser(id, user)
+
+	if err != nil {
+		return err
+	}
+
+	//create address
+	address := domain.Address{
+		AddressLine1: input.AddressInput.AddressLine1,
+		AddressLine2: input.AddressInput.AddressLine2,
+		City:         input.AddressInput.City,
+		Country:      input.AddressInput.Country,
+		PostCode:     input.AddressInput.PostCode,
+		UserId:       id,
+	}
+
+	err = s.Repo.CreateProfile(address)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
 
-func (s UserService) GetProfile(id uint, input any) (*domain.User, error) {
+func (s UserService) GetProfile(id uint) (*domain.User, error) {
+	user, err := s.Repo.FindUserById(id)
+	if err != nil {
+		return nil, err
+	}
 
-	return nil, nil
+	return &user, nil
 }
 
-func (s UserService) UpdateProfile(id uint, input any) error {
+func (s UserService) UpdateProfile(id uint, input dto.ProfileInput) error {
+	//find the user
+	user, err := s.Repo.FindUserById(id)
+	if err != nil {
+		return err
+	}
 
+	if input.FirstName != "" {
+		user.FirstName = input.FirstName
+	}
+	if input.LastName != "" {
+		user.LastName = input.LastName
+	}
+
+	_, err = s.Repo.UpdateUser(id, user)
+	address := domain.Address{
+		AddressLine1: input.AddressInput.AddressLine1,
+		AddressLine2: input.AddressInput.AddressLine2,
+		City:         input.AddressInput.City,
+		Country:      input.AddressInput.Country,
+		PostCode:     input.AddressInput.PostCode,
+		UserId:       id,
+	}
+
+	err = s.Repo.UpdateProfile(address)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -197,14 +261,64 @@ func (s UserService) BecomeSeller(id uint, input dto.SellerInput) (string, error
 	return token, nil
 }
 
-func (s UserService) FindCart(id uint) ([]interface{}, error) {
+func (s UserService) FindCart(id uint) ([]domain.Cart, error) {
+	cartItems, err := s.Repo.FindCartItems(id)
 
-	return nil, nil
+	log.Printf("error %v", err)
+
+	return cartItems, err
 }
 
-func (s UserService) CreateCart(id uint, u domain.User) ([]interface{}, error) {
+func (s UserService) CreateCart(input dto.CreateCartRequest, u domain.User) ([]domain.Cart, error) {
+	// check if the cart is Exist
+	cart, _ := s.Repo.FindCartItem(u.ID, input.ProductId)
 
-	return nil, nil
+	if cart.ID > 0 {
+		if input.ProductId == 0 {
+			return nil, errors.New("please provide a valid product id")
+		}
+		//  => delete the cart item
+		if input.Qty < 1 {
+			err := s.Repo.DeleteCartById(cart.ID)
+			if err != nil {
+				log.Printf("Error on deleting cart item %v", err)
+				return nil, errors.New("error on deleting cart item")
+			}
+		} else {
+			//  => update the cart item
+			cart.Qty = input.Qty
+			err := s.Repo.UpdateCart(cart)
+			if err != nil {
+				// log error
+				return nil, errors.New("error on updating cart item")
+			}
+		}
+
+	} else {
+		// check if product exist
+		product, err := s.CRepo.FindProductById(int(input.ProductId))
+		if err != nil || product == nil || product.ID < 1 {
+			return nil, errors.New("product not found to create cart item")
+		}
+		// create cart
+
+		err = s.Repo.CreateCart(domain.Cart{
+			UserId:    u.ID,
+			ProductId: input.ProductId,
+			Name:      product.Name,
+			ImageUrl:  product.ImageUrl,
+			Qty:       input.Qty,
+			Price:     product.Price,
+			SellerId:  uint(product.UserId),
+		})
+
+		if err != nil {
+			return nil, errors.New("error on creating cart item")
+		}
+	}
+
+	return s.Repo.FindCartItems(u.ID)
+
 }
 
 func (s UserService) CreateOrder(u domain.User) (int, error) {

@@ -52,3 +52,18 @@ twilio, SNS, SES
 
 # --- Cart and Orders
 create Cart & Order systems like Big E-commerce application
+
+Cart(preserve the cart items in FE) - Collect the payment - create order - Order - ship the order items
+
+Cart - Store all art items in Be/database - Order (cart items transferred to Order)
+
+Collecthe payment - success - Store all cart items
+
+Cart - continue to place order - createing order - collecting payment - order confirmed/ order failed - order detail
+
+
+User - api gateway - catalog - inventory service - seller service - vendor
+
+
+
+

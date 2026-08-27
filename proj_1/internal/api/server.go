@@ -34,9 +34,11 @@ func StartServer(config configs.AppConfig) {
 	//run migration - create tables
 	err = db.AutoMigrate(
 		&domain.User{},
+		&domain.Address{},
 		&domain.BankAccount{},
 		&domain.Category{},
 		&domain.Product{},
+		&domain.Cart{},
 	)
 	if err != nil {
 		log.Fatalf("error on runing migration %v", err.Error())
