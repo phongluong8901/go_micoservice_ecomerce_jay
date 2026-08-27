@@ -33,3 +33,9 @@ git checkout -b p7_seller
 git add .
 git commit -m "feat: first branch"
 git push -u origin p7_seller
+
+- branch
+git checkout -b p8_FE
+git add .
+git commit -m "feat: first branch"
+git push -u origin p8_FE
