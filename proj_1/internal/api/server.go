@@ -39,6 +39,9 @@ func StartServer(config configs.AppConfig) {
 		&domain.Category{},
 		&domain.Product{},
 		&domain.Cart{},
+		&domain.Order{},
+		&domain.OrderItem{},
+		&domain.Payment{},
 	)
 	if err != nil {
 		log.Fatalf("error on runing migration %v", err.Error())
@@ -87,6 +90,7 @@ func setupRoutes(rh *rest.RestHandler) { //Khai báo tham số nhận vào là m
 	handlers.SetupUserRoutes(rh)
 
 	//transactions
+	handlers.SetupTransactionRoutes(rh)
 
 	//catalog
 	handlers.SetupCatalogRoutes(rh)

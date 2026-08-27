@@ -29,6 +29,11 @@ type UserRepository interface {
 	//profile
 	CreateProfile(e domain.Address) error
 	UpdateProfile(e domain.Address) error
+
+	//order
+	CreateOrder(o domain.Order) error
+	FindOrders(uId uint) ([]domain.Order, error)
+	FindOrderById(id uint, uId uint) (domain.Order, error)
 }
 
 type userRepository struct {
@@ -76,7 +81,11 @@ func (r userRepository) FindUserById(id uint) (domain.User, error) {
 
 	//tìm kiếm bản ghi dựa vào Khóa chính (Primary Key), cụ thể ở đây là tìm người dùng (User) theo id.
 	// khi chay no se lay thong tin address truoc va gui kem ve theo user table
-	err := r.db.Preload("Address").First(&user, id).Error
+	err := r.db.
+		Preload("Address").
+		Preload("Cart").
+		Preload("Orders").
+		First(&user, id).Error
 	if err != nil {
 		log.Printf("find user error %v", err)
 		return domain.User{}, errors.New("user doese not exist")
@@ -148,4 +157,33 @@ func (r userRepository) UpdateProfile(e domain.Address) error {
 	}
 	return nil
 
+}
+
+func (r userRepository) CreateOrder(o domain.Order) error {
+	err := r.db.Create(&o).Error
+	if err != nil {
+		log.Printf("error on creating order %v", err)
+		return errors.New("failed to create order")
+	}
+	return nil
+}
+
+func (r userRepository) FindOrders(uId uint) ([]domain.Order, error) {
+	var orders []domain.Order
+	err := r.db.Where("user_id=?", uId).Find(&orders).Error
+	if err != nil {
+		log.Printf("error on fetching orders %v", err)
+		return nil, errors.New("failed to fetch orders")
+	}
+	return orders, nil
+}
+
+func (r userRepository) FindOrderById(id uint, uId uint) (domain.Order, error) {
+	var order domain.Order
+	err := r.db.Preload("Items").Where("id=? AND user_id=?", id, uId).First(&order).Error
+	if err != nil {
+		log.Printf("error on fetching order %v", err)
+		return domain.Order{}, errors.New("failed to fetch order")
+	}
+	return order, nil
 }

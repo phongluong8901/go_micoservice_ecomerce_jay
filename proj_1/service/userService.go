@@ -322,16 +322,74 @@ func (s UserService) CreateCart(input dto.CreateCartRequest, u domain.User) ([]d
 }
 
 func (s UserService) CreateOrder(u domain.User) (int, error) {
+	//find cart items for the user
+	cartItems, err := s.Repo.FindCartItems(u.ID)
+	if err != nil {
+		return 0, errors.New("error on finding cart items")
+	}
 
-	return 0, nil
+	if len(cartItems) == 0 {
+		return 0, errors.New("cart is empty cannot create the order")
+	}
+
+	//find success payment reference status
+	paymentId := "PAY12345"
+	txnId := "TXN12345"
+	orderRef, _ := helper.RandomNumbers(8)
+
+	//create order with generated OrderNumber
+	var amount float64
+	var orderItems []domain.OrderItem
+
+	for _, item := range cartItems {
+		orderItems = append(orderItems, domain.OrderItem{
+			ProductId: item.ProductId,
+			Qty:       item.Qty,
+			Price:     item.Price,
+			Name:      item.Name,
+			ImageUrl:  item.ImageUrl,
+			SellerId:  item.SellerId,
+		})
+	}
+
+	order := domain.Order{
+		UserId:         u.ID,
+		PaymentId:      paymentId,
+		TransactionId:  txnId,
+		OrderRefNumber: uint(orderRef),
+		Amount:         amount,
+		Items:          orderItems,
+	}
+
+	err = s.Repo.CreateOrder(order)
+	if err != nil {
+		return 0, err
+	}
+
+	//send email to user with order details
+
+	//remove cart items from the cart
+	err = s.Repo.DeleteCartItems(u.ID)
+	log.Printf("Deleting cart items Error %v", err)
+
+	//return order number
+
+	return orderRef, nil
 }
 
-func (s UserService) GetOrders(u domain.User) ([]interface{}, error) {
+func (s UserService) GetOrders(u domain.User) ([]domain.Order, error) {
+	orders, err := s.Repo.FindOrders(u.ID)
+	if err != nil {
+		return nil, err
+	}
 
-	return nil, nil
+	return orders, nil
 }
 
-func (s UserService) GetOrderById(id uint, uId uint) (interface{}, error) {
-
-	return nil, nil
+func (s UserService) GetOrderById(id uint, uId uint) (domain.Order, error) {
+	order, err := s.Repo.FindOrderById(id, uId)
+	if err != nil {
+		return order, err
+	}
+	return order, nil
 }
