@@ -1,0 +1,47 @@
+- branch
+git checkout -b p2_user
+git add .
+git commit -m "feat: create users api"
+git push -u origin p2_user
+
+- branch
+git checkout -b p3_bussiness
+git add .
+git commit -m "feat: first branch"
+git push -u origin p3_bussiness
+
+- branch
+git checkout -b p4_ORM
+git add .
+git commit -m "feat: first branch"
+git push -u origin p4_ORM
+
+- branch
+git checkout -b p5_JWT
+git add .
+git commit -m "feat: first branch"
+git push -u origin p5_JWT
+
+- branch
+git checkout -b p6_SMS
+git add .
+git commit -m "feat: first branch"
+git push -u origin p6_SMS
+ 
+- branch
+git checkout -b p7_seller
+git add .
+git commit -m "feat: first branch"
+git push -u origin p7_seller
+
+- branch
+git checkout -b p8_FE
+git add .
+git commit -m "feat: first branch"
+git push -u origin p8_FE
+
+- branch
+git checkout -b p9_Cart_Order
+git add .
+git commit -m "feat: first branch"
+git push -u origin p9_Cart_Order
