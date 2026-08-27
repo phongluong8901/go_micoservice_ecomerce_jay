@@ -37,6 +37,9 @@ go get github.com/golang-jwt/jwt/v4
 
 go get github.com/twilio/twilio-go
 
+go get github.com/gofiber/fiber/v2/middleware/cors
+go get github.com/gin-contrib/cors
+
 #--- set environemt tren Powershell
 set APP_ENV=dev
 
@@ -66,3 +69,16 @@ git init
 git add .
 git commit -m "feat: create new server + health"
 
+
+#--- FE 
+cd buy-sale
+
+--- install
+yarn
+yarn add --dev cross-env
+
+--- run
+yarn dev
+
+--- link
+http://localhost:3030/

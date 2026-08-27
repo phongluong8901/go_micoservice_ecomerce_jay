@@ -9,6 +9,7 @@ import (
 	"proj_1/internal/domain"
 	"proj_1/internal/helper"
 
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"gorm.io/driver/postgres"
 
 	"github.com/gofiber/fiber/v2"
@@ -19,8 +20,6 @@ func StartServer(config configs.AppConfig) {
 	app := fiber.New()
 
 	log.Printf("config DSN %v", config.Dsn)
-
-	app.Get("/health", HealthCheck)
 
 	//connection DB
 	db, err := gorm.Open(postgres.Open(config.Dsn), &gorm.Config{})
@@ -44,6 +43,21 @@ func StartServer(config configs.AppConfig) {
 	}
 
 	log.Println("migration was successful")
+
+	//cors configuration
+	c := cors.New(cors.Config{
+		AllowOrigins: "http://localhost:3000, http://localhost:3030",
+		AllowHeaders: "Content-Type, Accept, Authorization",
+		AllowMethods: "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+	})
+
+	app.Use(c)
+
+	app.Get("/", func(c *fiber.Ctx) error {
+		return rest.SuccessResponse(c, "I am Healthy", &fiber.Map{
+			"status": "ok with 200 status code",
+		})
+	})
 
 	//auth helper
 	auth := helper.SetupAuth(config.AppSecret)
