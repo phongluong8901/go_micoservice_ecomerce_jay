@@ -2,6 +2,7 @@ package configs
 
 import (
 	"errors"
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -34,7 +35,8 @@ func SetupEnv() (cfg AppConfig, err error) {
 	}
 
 	// check env dsn
-	Dsn := os.Getenv("DSN")
+	// Dsn := os.Getenv("DSN")
+	Dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v", os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"), os.Getenv("DB_PORT"))
 	if len(Dsn) < 1 {
 		return AppConfig{}, errors.New("env variables not found")
 	}
