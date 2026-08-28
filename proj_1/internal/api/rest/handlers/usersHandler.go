@@ -2,26 +2,28 @@ package handlers
 
 import (
 	"errors"
-	"log"
-	"net/http"
 	"proj_1/internal/api/rest"
 	"proj_1/internal/dto"
 	"proj_1/internal/repository"
 	"proj_1/service"
-	"strconv"
 
 	"github.com/gofiber/fiber/v2"
+
+	"log"
+	"net/http"
+	"strconv"
 )
 
 type UserHandler struct {
-	//svc UserService
+	// svc UserService
 	svc service.UserService
 }
 
 func SetupUserRoutes(rh *rest.RestHandler) {
+
 	app := rh.App
 
-	//create an instance of user service & inject to handler
+	// create an instance of user service & inject to handler
 	svc := service.UserService{
 		Repo:   repository.NewUserRepository(rh.DB),
 		CRepo:  repository.NewCatalogRepository(rh.DB),
@@ -32,36 +34,33 @@ func SetupUserRoutes(rh *rest.RestHandler) {
 		svc: svc,
 	}
 
-	//- create prefix for public gorup
-	pubRoutes := app.Group("/users")
-	//public endpoints
+	pubRoutes := app.Group("/")
+	// Public endpoints
 	pubRoutes.Post("/register", handler.Register)
 	pubRoutes.Post("/login", handler.Login)
 
-	//- create prefix for private gorup
-	pvtRoutes := pubRoutes.Group("/", rh.Auth.Authorize)
-	//private endpoints
+	pvtRoutes := pubRoutes.Group("/users", rh.Auth.Authorize)
+
+	// Private endpoint
 	pvtRoutes.Get("/verify", handler.GetVerificationCode)
 	pvtRoutes.Post("/verify", handler.Verify)
 
-	pvtRoutes.Get("/profile", handler.GetProfile)
 	pvtRoutes.Post("/profile", handler.CreateProfile)
+	pvtRoutes.Get("/profile", handler.GetProfile)
 	pvtRoutes.Patch("/profile", handler.UpdateProfile)
 
-	pvtRoutes.Get("/cart", handler.GetCart)
 	pvtRoutes.Post("/cart", handler.AddToCart)
+	pvtRoutes.Get("/cart", handler.GetCart)
 
-	pvtRoutes.Post("/order", handler.CreateOrder)
-	pvtRoutes.Get("/orders", handler.GetOrders)
+	pvtRoutes.Get("/order", handler.GetOrders)
 	pvtRoutes.Get("/order/:id", handler.GetOrder)
 
 	pvtRoutes.Post("/become-seller", handler.BecomeSeller)
+
 }
 
 func (h *UserHandler) Register(ctx *fiber.Ctx) error {
-	//to create user
 	user := dto.UserSignup{}
-
 	err := ctx.BodyParser(&user)
 	if err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(&fiber.Map{
@@ -80,12 +79,10 @@ func (h *UserHandler) Register(ctx *fiber.Ctx) error {
 		"message": "register",
 		"token":   token,
 	})
-
 }
-
 func (h *UserHandler) Login(ctx *fiber.Ctx) error {
-	loginInput := dto.UserLogin{}
 
+	loginInput := dto.UserLogin{}
 	err := ctx.BodyParser(&loginInput)
 	if err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(&fiber.Map{
@@ -94,9 +91,10 @@ func (h *UserHandler) Login(ctx *fiber.Ctx) error {
 	}
 
 	token, err := h.svc.Login(loginInput.Email, loginInput.Password)
+
 	if err != nil {
 		return ctx.Status(http.StatusUnauthorized).JSON(&fiber.Map{
-			"message": "please provide correct user id and password",
+			"message": "please provide correct user id password",
 		})
 	}
 
@@ -105,28 +103,31 @@ func (h *UserHandler) Login(ctx *fiber.Ctx) error {
 		"token":   token,
 	})
 }
-
 func (h *UserHandler) GetVerificationCode(ctx *fiber.Ctx) error {
-	user := h.svc.Auth.GetCurrentUser(ctx)
 
-	//create vertification code and updte to user profile in DB
+	user := h.svc.Auth.GetCurrentUser(ctx)
+	log.Println(user)
+	// create verification code and update to user profile in DB
 	err := h.svc.GetVerificationCode(user)
+	log.Println(err)
+
 	if err != nil {
 		return ctx.Status(http.StatusInternalServerError).JSON(&fiber.Map{
-			"message": "unable to generate vertification code",
+			"message": "unable to generate verification code",
 		})
 	}
 
 	return ctx.Status(http.StatusOK).JSON(&fiber.Map{
 		"message": "get verification code",
 	})
-}
 
+}
 func (h *UserHandler) Verify(ctx *fiber.Ctx) error {
+
 	user := h.svc.Auth.GetCurrentUser(ctx)
 
-	//request
-	var req dto.VertificationCodeInput
+	// request
+	var req dto.VerificationCodeInput
 
 	if err := ctx.BodyParser(&req); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(&fiber.Map{
@@ -135,8 +136,8 @@ func (h *UserHandler) Verify(ctx *fiber.Ctx) error {
 	}
 
 	err := h.svc.VerifyCode(user.ID, req.Code)
+
 	if err != nil {
-		log.Printf("%v", err)
 		return ctx.Status(http.StatusBadRequest).JSON(&fiber.Map{
 			"message": err.Error(),
 		})
@@ -146,21 +147,20 @@ func (h *UserHandler) Verify(ctx *fiber.Ctx) error {
 		"message": "verified successfully",
 	})
 }
-
 func (h *UserHandler) CreateProfile(ctx *fiber.Ctx) error {
+
 	user := h.svc.Auth.GetCurrentUser(ctx)
 	req := dto.ProfileInput{}
-
 	if err := ctx.BodyParser(&req); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(&fiber.Map{
-			"message": "please provide a  valid input",
+			"message": "please provide a valid input",
 		})
 	}
-
 	log.Printf("User %v", user)
+	// create profile
 
-	//create profile
 	err := h.svc.CreateProfile(user.ID, req)
+
 	if err != nil {
 		return ctx.Status(http.StatusInternalServerError).JSON(&fiber.Map{
 			"message": "unable to create profile",
@@ -168,15 +168,15 @@ func (h *UserHandler) CreateProfile(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(http.StatusOK).JSON(&fiber.Map{
-		"message": "create profile",
+		"message": "profile created successfully",
 	})
 }
-
 func (h *UserHandler) GetProfile(ctx *fiber.Ctx) error {
+
 	user := h.svc.Auth.GetCurrentUser(ctx)
 	log.Println(user)
 
-	//call user service and perform get profile
+	// call user service and perform get profile
 	profile, err := h.svc.GetProfile(user.ID)
 	if err != nil {
 		return ctx.Status(http.StatusInternalServerError).JSON(&fiber.Map{
@@ -186,7 +186,7 @@ func (h *UserHandler) GetProfile(ctx *fiber.Ctx) error {
 
 	return ctx.Status(http.StatusOK).JSON(&fiber.Map{
 		"message": "get profile",
-		"user":    profile,
+		"profile": profile,
 	})
 }
 
@@ -195,7 +195,7 @@ func (h *UserHandler) UpdateProfile(ctx *fiber.Ctx) error {
 	req := dto.ProfileInput{}
 	if err := ctx.BodyParser(&req); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(&fiber.Map{
-			"message": "please provide a  valid input",
+			"message": "please provide a valid input",
 		})
 	}
 
@@ -207,14 +207,13 @@ func (h *UserHandler) UpdateProfile(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(http.StatusOK).JSON(&fiber.Map{
-		"message": "update profile",
-		"cart":    user,
+		"message": "profile updated successfully",
 	})
 }
 
 func (h *UserHandler) AddToCart(ctx *fiber.Ctx) error {
-	req := dto.CreateCartRequest{}
 
+	req := dto.CreateCartRequest{}
 	if err := ctx.BodyParser(&req); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(&fiber.Map{
 			"message": "please provide a valid product and qty",
@@ -222,41 +221,25 @@ func (h *UserHandler) AddToCart(ctx *fiber.Ctx) error {
 	}
 
 	user := h.svc.Auth.GetCurrentUser(ctx)
-	log.Println(user)
 
-	//call user service and  perform create cart
+	// call user service and perform create cart
 	cartItems, err := h.svc.CreateCart(req, user)
 	if err != nil {
 		return rest.InternalError(ctx, err)
 	}
+
 	return rest.SuccessResponse(ctx, "cart created successfully", cartItems)
 
 }
-
 func (h *UserHandler) GetCart(ctx *fiber.Ctx) error {
 	user := h.svc.Auth.GetCurrentUser(ctx)
-
-	cart, err := h.svc.FindCart(user.ID)
+	cart, _, err := h.svc.FindCart(user.ID)
 	if err != nil {
-		return rest.InternalError(ctx, errors.New("cart doese not exist"))
+		return rest.InternalError(ctx, errors.New("cart does not exist"))
 	}
-
 	return ctx.Status(http.StatusOK).JSON(&fiber.Map{
-		"message": "GetCart",
+		"message": "get cart",
 		"cart":    cart,
-	})
-}
-
-func (h *UserHandler) CreateOrder(ctx *fiber.Ctx) error {
-	user := h.svc.Auth.GetCurrentUser(ctx)
-	orderRef, err := h.svc.CreateOrder(user)
-	if err != nil {
-		return rest.InternalError(ctx, errors.New("unable to create order"))
-	}
-
-	return ctx.Status(http.StatusOK).JSON(&fiber.Map{
-		"message": "order created successfully",
-		"order":   orderRef,
 	})
 }
 
@@ -269,11 +252,10 @@ func (h *UserHandler) GetOrders(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(http.StatusOK).JSON(&fiber.Map{
-		"message": "GetOrders",
+		"message": "get orders",
 		"orders":  orders,
 	})
 }
-
 func (h *UserHandler) GetOrder(ctx *fiber.Ctx) error {
 	orderId, _ := strconv.Atoi(ctx.Params("id"))
 	user := h.svc.Auth.GetCurrentUser(ctx)
@@ -288,7 +270,6 @@ func (h *UserHandler) GetOrder(ctx *fiber.Ctx) error {
 		"order":   order,
 	})
 }
-
 func (h *UserHandler) BecomeSeller(ctx *fiber.Ctx) error {
 
 	user := h.svc.Auth.GetCurrentUser(ctx)

@@ -10,8 +10,8 @@ type UserSignup struct {
 	Phone string `json:"phone"`
 }
 
-type VertificationCodeInput struct {
-	Code int `json:"code"`
+type VerificationCodeInput struct {
+	Code string `json:"code"`
 }
 
 type SellerInput struct {

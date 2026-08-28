@@ -2,17 +2,16 @@ package helper
 
 import (
 	"crypto/rand"
-	"strconv"
 )
 
-func RandomNumbers(length int) (int, error) {
+func RandomNumbers(length int) (string, error) {
 	const numbers = "123456789"
 
 	//Tạo một mảng byte ([]byte) tạm thời có kích thước đúng bằng length để chứa các giá trị ngẫu nhiên thô.
 	buffer := make([]byte, length)
 	_, err := rand.Read(buffer) //Đọc dữ liệu ngẫu nhiên: Dùng hàm an toàn rand.Read để lấp đầy mảng buffer bằng các byte ngẫu nhiên từ hệ thống
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
 	numLength := len(numbers)
@@ -22,5 +21,5 @@ func RandomNumbers(length int) (int, error) {
 		buffer[i] = numbers[int(buffer[i])%numLength]
 	}
 
-	return strconv.Atoi(string(buffer)) //Chuyển chuỗi số đó thành kiểu số nguyên (int).
+	return string(buffer), nil //Chuyển chuỗi số đó thành kiểu số nguyên (int).
 }

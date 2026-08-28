@@ -17,6 +17,7 @@ type AppConfig struct {
 	StripeSecret          string
 	SuccessUrl            string
 	CancelUrl             string
+	PubKey                string
 }
 
 func SetupEnv() (cfg AppConfig, err error) {
@@ -50,5 +51,6 @@ func SetupEnv() (cfg AppConfig, err error) {
 		StripeSecret:          os.Getenv("STRIPE_SECRET"),
 		SuccessUrl:            os.Getenv("SUCCESS_URL"),
 		CancelUrl:             os.Getenv("CANCEL_URL"),
+		PubKey:                os.Getenv("STRIPE_PUBLIC_KEY"),
 	}, nil
 }

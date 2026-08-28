@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"proj_1/internal/domain"
+	"strconv"
 	"strings"
 	"time"
 
@@ -140,7 +141,12 @@ func (a Auth) GetCurrentUser(ctx *fiber.Ctx) domain.User {
 }
 
 func (a Auth) GenerateCode() (int, error) {
-	return RandomNumbers(6)
+	code, err := RandomNumbers(6)
+	if err != nil {
+		return 0, err
+	}
+
+	return strconv.Atoi(code)
 }
 
 func (a Auth) AuthorizeSeller(ctx *fiber.Ctx) error {
