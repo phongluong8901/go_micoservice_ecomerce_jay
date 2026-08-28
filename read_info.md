@@ -64,6 +64,17 @@ Cart - continue to place order - createing order - collecting payment - order co
 
 User - api gateway - catalog - inventory service - seller service - vendor
 
+# --- payment
+user - browser - backend servie - payment provider - bank
 
+request session - success URL / failure URl
+session response
+transaction notification webhook
 
+authorization RQ
+Grant approval base on credential
+capture fund
+receive fund
+
+Our backend service - payment provider - bank
 

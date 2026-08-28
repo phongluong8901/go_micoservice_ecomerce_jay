@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"net/http"
 	"proj_1/internal/api/rest"
 	"proj_1/internal/helper"
 	"proj_1/internal/repository"
+	"proj_1/pkg/payment"
 	"proj_1/service"
 
 	"github.com/gofiber/fiber/v2"
@@ -11,7 +13,8 @@ import (
 )
 
 type TransactionHandler struct {
-	svc service.TransactionService
+	svc           service.TransactionService
+	paymentClient payment.PaymentClient
 }
 
 func initializeTransactionService(db *gorm.DB, auth helper.Auth) service.TransactionService {
@@ -27,7 +30,8 @@ func SetupTransactionRoutes(as *rest.RestHandler) {
 	svc := initializeTransactionService(as.DB, as.Auth)
 
 	handler := TransactionHandler{
-		svc: svc,
+		svc:           svc,
+		paymentClient: as.Pc,
 	}
 
 	secRoute := app.Group("/", as.Auth.Authorize)
@@ -39,12 +43,22 @@ func SetupTransactionRoutes(as *rest.RestHandler) {
 }
 
 func (h *TransactionHandler) MakePayment(ctx *fiber.Ctx) error {
-	payload := struct {
-		message string `json:"message"`
-	}{
-		message: "success",
+	//create  payment & collect it
+	//1. call user servcice get cart data to aggrefate the total amount and collect payment
+
+	//2. ckeck if payment session active or create a payment session
+	sessionResult, err := h.paymentClient.CreatePayment(2, 123, 456)
+
+	//3. store payment session in db to create and validate order
+	if err != nil {
+		return ctx.Status(400).JSON(err)
 	}
-	return ctx.Status(200).JSON(payload)
+
+	return ctx.Status(http.StatusOK).JSON(&fiber.Map{
+		"mesasge":     "",
+		"result":      sessionResult,
+		"payment_url": sessionResult.URL,
+	})
 }
 
 func (h *TransactionHandler) GetOrders(ctx *fiber.Ctx) error {

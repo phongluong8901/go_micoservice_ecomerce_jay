@@ -40,6 +40,8 @@ go get github.com/twilio/twilio-go
 go get github.com/gofiber/fiber/v2/middleware/cors
 go get github.com/gin-contrib/cors
 
+go get github.com/stripe/stripe-go/v78
+
 #--- set environemt tren Powershell
 set APP_ENV=dev
 

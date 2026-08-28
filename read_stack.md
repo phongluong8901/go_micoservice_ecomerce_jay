@@ -59,11 +59,17 @@ AWS SNS (Simple Notification Service): Dịch vụ của Amazon dùng để gử
 AWS SES (Simple Email Service): Dịch vụ của Amazon chuyên dùng để gửi Email (như email kích hoạt tài khoản, newsletter, v.v.), không dùng cho SMS.
 
 
+3. stripe
+https://stripe.com/
+https://docs.stripe.com/testing
+Stripe (bạn gõ nhầm thành strtip) là một nền tảng cổng thanh toán trực tuyến (Payment Gateway) cực kỳ phổ biến và mạnh mẽ trên thế giới.
 
+Thanh toán trực tuyến: Cho phép khách hàng mua hàng thanh toán bằng thẻ tín dụng/ghi nợ quốc tế (Visa, MasterCard, JCB, American Express) hoặc các ví điện tử (Apple Pay, Google Pay).
 
+Quản lý Marketplace (Sàn thương mại điện tử đa người bán): Thông qua tính năng Stripe Connect, bạn có thể tự động hóa việc nhận tiền từ khách hàng, giữ tiền hoa hồng của sàn, và chuyển phần tiền còn lại trực tiếp vào tài khoản ngân hàng của từng Seller (rất phù hợp với chức năng BecomeSeller và quản lý tài khoản ngân hàng trong code của bạn).
 
+Thu phí định kỳ (Subscriptions): Dùng cho các mô hình kinh doanh dạng gói thuê bao tháng/năm (như Netflix, Spotify hoặc các dịch vụ SaaS).
 
-
-
+Bảo mật và chống gian lận: Stripe tích hợp sẵn các công cụ bảo mật cao cấp (như Stripe Radar) để phát hiện giao dịch giả mạo, bảo vệ người bán và tuân thủ các tiêu chuẩn bảo mật tài chính quốc tế (PCI-DSS).
 
 
