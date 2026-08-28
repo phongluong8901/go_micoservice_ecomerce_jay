@@ -63,3 +63,9 @@ git checkout -b p12_Deploy_aws
 git add .
 git commit -m "feat: first branch"
 git push -u origin p12_Deploy_aws
+
+- branch
+git checkout -b p13_CICD
+git add .
+git commit -m "feat: first branch"
+git push -u origin p13_CICD
