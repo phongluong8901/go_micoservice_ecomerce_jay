@@ -1,17 +1,17 @@
 package main
 
-import (
-	"log"
-	"proj_1/configs"
-	"proj_1/internal/api"
-)
+// import (
+// 	"log"
+// 	"proj_1/configs"
+// 	"proj_1/internal/api"
+// )
 
-func main() {
-	cfg, err := configs.SetupEnv()
+// func main() {
+// 	cfg, err := configs.SetupEnv()
 
-	if err != nil {
-		log.Fatalf("config file is not loaded properly %v\n", err)
-	}
+// 	if err != nil {
+// 		log.Fatalf("config file is not loaded properly %v\n", err)
+// 	}
 
-	api.StartServer(cfg)
-}
+// 	api.StartServer(cfg)
+// }

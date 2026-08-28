@@ -72,4 +72,13 @@ Thu phí định kỳ (Subscriptions): Dùng cho các mô hình kinh doanh dạn
 
 Bảo mật và chống gian lận: Stripe tích hợp sẵn các công cụ bảo mật cao cấp (như Stripe Radar) để phát hiện giao dịch giả mạo, bảo vệ người bán và tuân thủ các tiêu chuẩn bảo mật tài chính quốc tế (PCI-DSS).
 
+4. AWS Elastic Beanstalk
+là một dịch vụ điện toán đám mây dạng PaaS (Platform as a Service) do Amazon Web Services cung cấp, giúp nhà phát triển nhanh chóng triển khai (deploy) và quản lý ứng dụng trên nền tảng đám mây mà không cần bận tâm về việc cấu hình hạ tầng cơ sở hạ tầng (như máy chủ, hệ điều hành, tường lửa hay cân bằng tải).
 
+Tự động hóa quản lý: Bạn chỉ cần tải mã nguồn ứng dụng lên (hỗ trợ Java, .NET, PHP, Node.js, Python, Ruby, Go và Docker), Elastic Beanstalk sẽ tự động lo phần cấp phát tài nguyên, cân bằng tải (load balancing), tự động mở rộng (auto-scaling) và giám sát trạng thái ứng dụng.
+
+Toàn quyền kiểm soát: Mặc dù tự động quản lý, nhưng bạn vẫn giữ quyền kiểm soát hoàn toàn đối với các tài nguyên AWS bên dưới (như EC2, S3, RDS, VPC). Bạn có thể tự tay chỉnh sửa cấu hình bất cứ lúc nào nếu cần.
+
+Tiết kiệm chi phí: Bản thân dịch vụ Elastic Beanstalk hoàn toàn miễn phí; bạn chỉ phải trả tiền cho các tài nguyên AWS thực tế mà ứng dụng của bạn sử dụng (như dung lượng máy chủ EC2 hay ổ cứng lưu trữ).
+
+Nhanh chóng triển khai: Rất phù hợp cho các nhà phát triển hoặc các đội ngũ muốn đưa sản phẩm lên môi trường production hoặc staging trong thời gian ngắn mà không mất công thiết lập hệ thống DevOps phức tạp từ đầu.
