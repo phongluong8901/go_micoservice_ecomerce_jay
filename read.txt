@@ -2,6 +2,10 @@
 https://github.com/codergogoi
 
 https://github.com/codergogoi/go-ecommerce-series
+
+#--- source FE
+https://github.com/codergogoi/buy-sale
+
 #--- docs
 Ecommerce golang full stack
 
@@ -24,6 +28,18 @@ go get github.com/joho/godotenv
 - nodemon cho makefile va APP_ENV=dev
 sudo npm install nodemon -g
 
+go get -u gorm.io/gorm
+go get -u gorm.io/driver/postgres
+go get gorm.io/driver/postgres
+
+go get golang.org/x/crypto/bcrypt
+go get github.com/golang-jwt/jwt/v4
+
+go get github.com/twilio/twilio-go
+
+go get github.com/gofiber/fiber/v2/middleware/cors
+go get github.com/gin-contrib/cors
+
 #--- set environemt tren Powershell
 set APP_ENV=dev
 
@@ -33,6 +49,14 @@ go run .
 
 - chay khi co nodemon
 APP_ENV=dev go run .
+
+#--- docker compose
+- connect tableplus
+host: 127.0.0.1
+
+- run
+docker compose up -d
+docker compose down
 
 #--- test
 
@@ -45,8 +69,16 @@ git init
 git add .
 git commit -m "feat: create new server + health"
 
-- branch
-git checkout -b p2_user
-git add .
-git commit -m "feat: create users api"
-git push -u origin p2_user
+
+#--- FE 
+cd buy-sale
+
+--- install
+yarn
+yarn add --dev cross-env
+
+--- run
+yarn dev
+
+--- link
+http://localhost:3030/
